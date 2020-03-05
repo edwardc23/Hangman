@@ -1,42 +1,125 @@
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Hangman {
     static int missed=0;
+    static String[] words= new String[]{"dismal",
+            "cannae",
+            "diaper",
+            "asosan",
+            "astron",
+            "mostly",
+            "cowled",
+            "chroma",
+            "nakuru",
+            "sepsis",
+            "censor",
+            "gotten",
+            "guided",
+            "trygon",
+            "denise",
+            "script",
+            "edward",
+            "fishes",
+            "animus",
+            "florin"};
     static String word="";
     static Scanner in = new Scanner(System.in);
     static char [] letters;
-    static char [] filled;
-
-
-
+    static char [] filled ;
+    static String missedLetter;
+    static char [] mL;
+    static String ans="yes";
+    static boolean isDone = false;
+    static int iter=0;
     public static void main(String[] args)
     {
-        System.out.println("What word should player 2 guess?");
-        word= in.next().toLowerCase();
-       letters =new char[word.length()];
-       filled = new char[word.length()];
-       System.out.println("HANGMAN");
+        Random rand = new Random();
 
-        for(int x=0;x<word.length();x++)
-        {
-            letters[x]=word.charAt(x);
-        }
 
-        while(missed<=7)
+        while(ans.equals("yes"))
         {
-            System.out.println(createBoard(missed));
-            play(word);
+            int randNum= rand.nextInt(20);
+            mL=new char[26];
+            word= words[randNum];
+            letters =new char[word.length()];
+            filled =new char[word.length()];
+            filled=blankArray(filled);
+
+            System.out.println("HANGMAN");
+            missedLetter="";
+            for(int x=0;x<word.length();x++)
+            {
+                letters[x]=word.charAt(x);
+            }
+
+            while(missed<7)
+            {
+                int y=0;
+                for(char x:letters)
+                {
+                    if(x!=filled[y])
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        y++;
+                    }
+                    if(y==word.length())
+                    {
+                        String win="Yes! The secret word is \"%s\"! You have won!";
+                        System.out.println(String.format(win,word));
+                        isDone=true;
+                        break;
+                    }
+
+                }
+                if(isDone==false){
+                    System.out.println(createBoard(missed));
+                    play(word);}
+                else
+                    {
+                    break;
+                }
+
+
+
+            }
+            System.out.println("Do you want to play again? (yes or no)");
+            ans= in.next();
+            if(ans.equals("yes"))
+            {
+                isDone=false;
+            }
         }
 
     }
-    public static String play(String word){
-        System.out.println("Missed");
+    public static void play(String word){
+        String miss="Missed letters:";
+        System.out.println(miss+" "+missedLetter);
+        print(filled);
         System.out.println("Guess a letter");
-String l = in.next();
-int y=0;
-int length= word.length()-1;
+
+        String l = in.next();
+        int y=0;
+        int length= word.length()-1;
+
         char guess= l.charAt(0);
+        for(char x:filled){
+            if(mL!=null){
+                for(char t:mL){
+                    if(guess==x||guess==t)
+                        {
+                            System.out.println("You have already guessed that letter. Choose again.");
+                            String w=in.next();
+                            guess=w.charAt(0);
+                            break;
+                        }
+                }
+                }
+        }
         for(char x:letters)
         {
 
@@ -44,23 +127,61 @@ int length= word.length()-1;
             {
                 if(y==length)
                 {
+                   missedLetter= missedLetter+guess;
+                    mL[iter]=guess;
+
                    missed++;
+
                 }
                 y++;
             }
             else
-            {
-                fill(y,letters);
-                continue;
+                { Integer [] index=new Integer[word.length()];
+            Integer k=0;
+            int place=0;
+                for (char z:letters)
+                {
+                    if(z==guess)
+                    {
+                        index[place]=k;
+                        place++;
+                    }
+                    k++;
+                }
+                fill(index,letters);
+                break;
             }
         }
 
-        return null;
+
     }
-    public static void fill(int x,char[] y)
+    public static void print (char [] arr)
     {
-        filled[x]=y[x];
-        System.out.println(Arrays.toString(filled));
+        for(char x:arr)
+        {
+            System.out.print(x+" ");
+        }
+        System.out.println("");
+    }
+    public static char[] blankArray(char[] fillThis)
+    {
+        int x=0;
+        while(x<=fillThis.length-1)
+        {
+            fillThis[x]='_';
+            x++;
+        }
+
+        return fillThis;
+    }
+    public static void fill(Integer[] x,char[] y)
+    {
+        for(Integer c:x)
+        {
+            if(c!=null) {
+                filled[c.intValue()] = y[c.intValue()];
+            }
+        }
 
     }
     public static String createBoard(int missed)
@@ -116,17 +237,15 @@ int length= word.length()-1;
 
             return board2;
             case 3:
-                board= "H A N G M A N\n" +
+                board3= " +---+\n" +
                         "\n" +
-                        "  +---+\n" +
+                        "O   |\n" +
                         "\n" +
-                        "      |\n" +
+                        "|   |\n" +
                         "\n" +
-                        "      |\n" +
+                        "|   |\n" +
                         "\n" +
-                        "      |\n" +
-                        "\n" +
-                        "     ===";
+                        "    ===";
                 return board3;
 
             case 4:
